@@ -5,6 +5,7 @@ import os
 from celery import shared_task
 from django.conf import settings
 from subprocess import Popen, PIPE
+from summarization import summarize_pipline
 from .models import Speaker, Meeting, Transcript
 from celery.utils.log import get_task_logger
 
@@ -23,12 +24,9 @@ def prepare_transcript(mid):
         for t in output[speaker]:
             entry = Transcript(timestamp=t[0],text=t[1],sid=s,mid=meeting)
             entry.save()
-    
-    meeting.summary = 'done'
-    meeting.save()
 
 @shared_task
-def update_meeting(mid):
+def prepare_summary(mid):
     meeting = Meeting.objects.get(pk=mid)
-    meeting.name = 'changed'
+    meeting.summary = summarize_pipline(meeting.audio.path)
     meeting.save()

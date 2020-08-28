@@ -30,7 +30,10 @@
                             <source src="{{meeting.audio.url}}" type="audio/mpeg">
                         </audio>
                         {% if meeting.summary == "" %}
-                            <a href="#" class="btn btn-primary stretched-link">Processing</a>
+                            <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'imom:home' %}';">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Refresh...
+                            </button>
                         {% else %}
                             <a href="{% url 'imom:transcript' meeting.id %}" class="btn btn-primary stretched-link">Transcript</a>
                         {% endif %}

@@ -1,12 +1,12 @@
 import os
 import ast
-from .tasks import prepare_transcript
 from django.conf import settings
 from subprocess import Popen, PIPE
 from django.urls import reverse
 from django.views import View
 #from summarization import summarize_pipline
 from django.shortcuts import render, redirect
+from .tasks import prepare_transcript, prepare_summary
 from .models import Meeting, MeetingForm, SpeakerEditForm, Speaker, Transcript
 
 # Create your views here.
@@ -26,9 +26,7 @@ class Home(View):
             meeting.save()
             prepare_transcript.delay(meeting.id)
             #update_meeting(meeting.id)
-            #summary = summarize_pipline(meeting.audio.path)
-            #print(summary)
-
+            prepare_summary.run(meeting.id)
             return redirect(reverse('imom:home'))
         else:
             return render(request, self.template_name, {"form": form})

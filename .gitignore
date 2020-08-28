@@ -3,3 +3,6 @@
 /audio
 /static
 db.sqlite3
+*.wav
+migrations/
+__pycache__/
