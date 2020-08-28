@@ -1,0 +1,46 @@
+{% extends 'base.html' %} {% block main %}
+<section class="jumbotron text-center mb-0">
+    <div class="container">
+        <h1 class="jumbotron-heading">IMOM</h1>
+        <p class="lead text-muted">An AI-enabled tool to tag multiple speakers from a pre-recorded meeting audio and generate the transcript along with the MoM summary</p>
+        <div class="row justify-content-center">
+            <form class="form-inline" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label class="mb-2 mr-sm-2" for="name">Meeting Name</label> {{form.name}} {{form.audio}}
+
+                <button type="submit" class="btn btn-primary mb-2">Audio Upload</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<div class="album py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            {% for meeting in meetings %}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <!-- <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap"> -->
+                    <div class="card-body">
+                        <h5 class="card-title">{{meeting.name}}</h5>
+
+                        <!-- <div class="d-flex justify-content-between align-items-center"> -->
+
+                        <audio controls style="width: 100%;">
+                            <source src="{{meeting.audio.url}}" type="audio/mpeg">
+                        </audio>
+                        {% if meeting.summary == "" %}
+                            <a href="#" class="btn btn-primary stretched-link">Processing</a>
+                        {% else %}
+                            <a href="{% url 'imom:transcript' meeting.id %}" class="btn btn-primary stretched-link">Transcript</a>
+                        {% endif %}
+                        <a href="{% url 'imom:delete' meeting.id %}" class="btn btn-danger float-right">Delete</a>
+                        <!-- </div> -->
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
