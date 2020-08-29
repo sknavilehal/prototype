@@ -2,9 +2,9 @@
 import argparse
 import sys
 import os
-sys.path.append('ghostvlad')
+sys.path.append('transcript/ghostvlad')
 import model as spkModel
-import toolkits
+#import toolkits
 import azure.cognitiveservices.speech as speechsdk
 from pydub import AudioSegment
 import numpy as np
@@ -456,7 +456,6 @@ def asr(audio, timestamps):
             d[speaker].append((timestamp['start'], transcript))
             i += 1
     return d
-
 
 result = pipeline(args.filename)
 print(result)

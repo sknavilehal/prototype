@@ -3,7 +3,7 @@
 
 # In[1]:
 
-
+import argparse
 import azure.cognitiveservices.speech as speechsdk
 from transformers import pipeline
 summarizer = pipeline("summarization")
@@ -15,7 +15,10 @@ speech_config=speechsdk.SpeechConfig(subscription=speech_key, region=service_reg
 
 
 # In[2]:
-
+parser = argparse.ArgumentParser()
+# set up training configuration.
+parser.add_argument('--filename', type=str)
+args = parser.parse_args()
 
 def summarize_pipline(audio, chunks_output_folder='audio_chunks'):
     get_audio_chunks(audio)
@@ -89,7 +92,7 @@ def transcribe_each_chunk(folder=r'audio_chunks'):
 
         # Checks result.
         if result.reason == speechsdk.ResultReason.RecognizedSpeech:
-            print(result.text)
+            #print(result.text)
             final_text += result.text
         elif result.reason == speechsdk.ResultReason.NoMatch:
             print("No speech could be recognized: {}".format(result.no_match_details))
@@ -100,20 +103,14 @@ def transcribe_each_chunk(folder=r'audio_chunks'):
                 print("Error details: {}".format(cancellation_details.error_details))
     return final_text
 
-
 # In[9]:
-
-
 def summarize(text):
     summary = summarizer(text, min_length=5, model = 'bart-large-cnn')
     sum_text = summary[0]['summary_text']
-    print(sum_text)
+    #print(sum_text)
     return sum_text
 
-
 # In[10]:
-
-if __name__ == '__main__':
-    summary = summarize_pipline("dia.wav")
-    print("================= Summary =============================")
-    print(summary)
+summary = summarize_pipline(args.filename)
+#print("================= Summary =============================")
+print(summary)
