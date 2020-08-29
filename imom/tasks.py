@@ -10,11 +10,13 @@ from .models import Speaker, Meeting, Transcript
 from celery.utils.log import get_task_logger
 
 @shared_task
-def prepare_transcript(mid):
+def transcript_summary(mid):
     meeting = Meeting.objects.get(pk=mid)
     pipeline_path = os.path.join(settings.BASE_DIR, 'transcript','pipeline.py')
     process = Popen(['python', pipeline_path, '--filename', meeting.audio.path], stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
+    print(stdout.decode('utf-8'))
+    print(stderr.decode('utf-8'))
     output = stdout.decode('utf-8').strip()
     output = ast.literal_eval(output)
     
@@ -25,8 +27,6 @@ def prepare_transcript(mid):
             entry = Transcript(timestamp=t[0],text=t[1],sid=s,mid=meeting)
             entry.save()
 
-@shared_task
-def prepare_summary(mid):
-    meeting = Meeting.objects.get(pk=mid)
     meeting.summary = summarize_pipline(meeting.audio.path)
     meeting.save()
+    

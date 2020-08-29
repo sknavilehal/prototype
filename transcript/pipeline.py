@@ -330,7 +330,7 @@ def load_data(path, win_length=400, sr=16000, hop_length=160, n_fft=512, embeddi
 def dia_audio(wav_path, embedding_per_second=0.3, overlap_rate=0.35):
 
     # gpu configuration
-    toolkits.initialize_GPU(args)
+    #toolkits.initialize_GPU(args)
 
     params = {'dim': (257, None, 1),
               'nfft': 512,
