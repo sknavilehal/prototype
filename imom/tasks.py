@@ -18,8 +18,10 @@ def transcript_summary(mid):
     print(stdout.decode('utf-8'))
     print(stderr.decode('utf-8'))
     output = stdout.decode('utf-8').strip()
-    output = ast.literal_eval(output)
-    
+    try:
+        output = ast.literal_eval(output)
+    except:
+        output = {0 : [(0,"There was an error while generating the transcript")]}
     for speaker in output.keys():
         s = Speaker(name='speaker %d' % speaker, mid=meeting)
         s.save()
