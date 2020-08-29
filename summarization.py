@@ -105,7 +105,7 @@ def transcribe_each_chunk(folder=r'audio_chunks'):
 
 
 def summarize(text):
-    summary = summarizer(text, min_length=5, max_length=20)
+    summary = summarizer(text, min_length=5, model = 'bart-large-cnn')
     sum_text = summary[0]['summary_text']
     print(sum_text)
     return sum_text
