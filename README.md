@@ -3,10 +3,11 @@
 MOM.ai is an AI-enabled tool to tag multiple speakers from a pre-recorded meeting audio and generate the transcript along with the MoM summary
 
 ## Prerequisite
-Ubuntu
-Python 3
-Redis server running on localhost:6379
-At least 8GB of RAM
+Ubuntu\
+Python 3\
+Redis server running on localhost:6379\
+At least 8GB of RAM\
+At least 2GB of free disk space
 
 ## Installation
 
@@ -39,4 +40,4 @@ In a browser navigate to http://127.0.0.1:8000/home to begin using the app
 
 You may only upload .wav file for processing
 
-The web app may take a long time to load initially as it has to download an AI model of 1.2GB size
+The web app will take a long time to load initially as it has to download an AI model of 1.2GB size
