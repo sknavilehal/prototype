@@ -5,7 +5,6 @@ MOM.ai is an AI-enabled tool to tag multiple speakers from a pre-recorded meetin
 ## Prerequisite
 Ubuntu\
 Python 3\
-Redis server running on localhost:6379\
 At least 8GB of RAM\
 At least 2GB of free disk space
 
@@ -14,6 +13,12 @@ At least 2GB of free disk space
 Clone the git repo and navigate to the project root
 
 Setup a virtual python environment if required
+
+Install redis server if don't already have it. The server should run on localhost:6379
+```bash
+sudo apt-get update
+sudo apt-get install redis-server
+```
 
 Use the python package manager [pip](https://pip.pypa.io/en/stable/) to install MOM.ai python requirements.
 ```bash
