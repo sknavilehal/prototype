@@ -43,7 +43,7 @@ def transcript(request,mid):
             speaker.name = new_name
             speaker.save()
             return redirect(reverse('imom:transcript', args=(mid,)))
-
+        
     return render(request, 'imom/transcript.html', {"form":form, "transcripts":transcripts, "meeting":meeting})
 
 def download_transcript(request, mid):

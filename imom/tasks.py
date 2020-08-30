@@ -35,4 +35,10 @@ def transcript_summary(mid):
     print(stderr.decode('utf-8'))
     meeting.summary = stdout.decode('utf-8').strip()
     meeting.save()
+
+    wavs = [os.path.join(settings.BASE_DIR,w) for w in os.listdir() if w.endswith('.wav')]
+    wavs += [os.path.join(settings.BASE_DIR, 'audio_chunks',w) for w in os.listdir('audio_chunks') if w.endswith('.wav')]
+
+    for wav in wavs:
+        os.remove(wav)
     

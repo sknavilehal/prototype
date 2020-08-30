@@ -1,14 +1,14 @@
 {% extends 'base.html' %} {% block main %}
 <section class="jumbotron text-center mb-0">
     <div class="container">
-        <h1 class="jumbotron-heading">IMOM</h1>
+        <h1 class="jumbotron-heading">MOM.ai</h1>
         <p class="lead text-muted">An AI-enabled tool to tag multiple speakers from a pre-recorded meeting audio and generate the transcript along with the MoM summary</p>
         <div class="row justify-content-center">
             <form class="form-inline" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <label class="mb-2 mr-sm-2" for="name">Meeting Name</label> {{form.name}} {{form.audio}}
 
-                <button type="submit" class="custm-btn btn mb-2">Audio Upload</button>
+                <button type="submit" class="custm-btn btn mb-2">.WAV Upload</button>
             </form>
         </div>
     </div>

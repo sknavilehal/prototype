@@ -428,14 +428,12 @@ def transcribe(audio):
     if result.reason == speechsdk.ResultReason.RecognizedSpeech:
         return result.text
     elif result.reason == speechsdk.ResultReason.NoMatch:
-        print("No speech could be recognized: {}".format(result.no_match_details))
+        print("No speech could be recognized: {}".format(result.no_match_details), file=sys.stderr)
     elif result.reason == speechsdk.ResultReason.Canceled:
         cancellation_details = result.cancellation_details
-        print("Speech Recognition canceled: {}".format(
-            cancellation_details.reason))
+        print("Speech Recognition canceled: {}".format(cancellation_details.reason), file=sys.stderr)
         if cancellation_details.reason == speechsdk.CancellationReason.Error:
-            print("Error details: {}".format(
-                cancellation_details.error_details))
+            print("Error details: {}".format(cancellation_details.error_details), file=sys.stderr)
 
 
 # def asr(audio, timestamps):
@@ -500,6 +498,6 @@ def asr(audio, timestamps):
             i += 1
     return d
 
-
 result = pipeline(args.filename)
+if not result: result = {0 : [(0,"No speech could be recognized")]}
 print(result)
