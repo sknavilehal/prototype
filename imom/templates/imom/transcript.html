@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block main %}
 <div class="py-5 bg-light" style="min-height: 500px;">
     <div class="container">
-        <div class="row mt-4">
+        <div class="row mt-4 p-4 row-bordered">
             <div class="col">
                 <h5 class="display-5">Rename Speakers</h5>
                 <form class="form-inline" method="post">
@@ -9,29 +9,30 @@
                     <label class="mb-2 mr-sm-2" for="name">Speaker</label> {{form.sid}}
                     <label class="mb-2 mr-sm-2" for="name">Name</label> {{form.new_name}}
 
-                    <button type="submit" class="btn btn-primary mb-2">Rename</button>
+                    <button type="submit" class="btn custm-btn mb-2">Rename</button>
                 </form>
             </div>
         </div>
-        <div class="row mt-5">
-            <div class="col">
+        <div class="row mt-5 p-4 row-bordered">
+            <div class="col-12">
                 <h5 class="display-5">Transcript</h5>
                 {% for transcript in transcripts %}
                 <p>{{transcript}}</p>
                 {% endfor %}
             </div>
+            <div class="col-12">
+                <a href="{% url 'imom:dwnld_transcript' meeting.id %}" class="btn suc-btn">Download Transcript</a>
+            </div>
         </div>
-        <div class="row">
-            <a href="{% url 'imom:dwnld_transcript' meeting.id %}" class="btn btn-success">Download Transcript</a>
-        </div>
-        <div class="row mt-5">
-            <div class="col">
+        
+        <div class="row mt-5 p-4 row-bordered">
+            <div class="col-12">
                 <h5 class="display-5">Summary</h5>
                 <p>{{meeting.summary}}</p>
             </div>
-        </div>
-        <div class="row">
-            <a href="{% url 'imom:dwnld_summary' meeting.id %}" class="btn btn-success">Download Summary</a>
+            <div class="col-12">
+                <a href="{% url 'imom:dwnld_summary' meeting.id %}" class="btn suc-btn">Download Summary</a>
+            </div>
         </div>
     </div>
 </div>

@@ -8,18 +8,18 @@
                 {% csrf_token %}
                 <label class="mb-2 mr-sm-2" for="name">Meeting Name</label> {{form.name}} {{form.audio}}
 
-                <button type="submit" class="btn btn-primary mb-2">Audio Upload</button>
+                <button type="submit" class="custm-btn btn mb-2">Audio Upload</button>
             </form>
         </div>
     </div>
 </section>
 
-<div class="album py-5 bg-light">
+<div class="py-5 bg-light" style="min-height: 400px;">
     <div class="container">
         <div class="row">
             {% for meeting in meetings %}
             <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
+                <div class="card mb-4 shadow-sm" style="background-color: #f0f8ff;">
                     <!-- <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap"> -->
                     <div class="card-body">
                         <h5 class="card-title text-center">{{meeting.name}}</h5>
@@ -35,7 +35,7 @@
                                 Refresh...
                             </button>
                         {% else %}
-                            <a href="{% url 'imom:transcript' meeting.id %}" class="btn btn-primary stretched-link">Transcript</a>
+                            <a href="{% url 'imom:transcript' meeting.id %}" class="custm-btn btn stretched-link">Transcript</a>
                         {% endif %}
                         <a href="{% url 'imom:delete' meeting.id %}" class="btn btn-danger float-right">Delete</a>
                         <!-- </div> -->
