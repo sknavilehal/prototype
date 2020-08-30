@@ -18,6 +18,10 @@ Setup a virtual python environment if required
 Use the python package manager [pip](https://pip.pypa.io/en/stable/) to install MOM.ai python requirements.
 ```bash
 pip install -r requirements.txt
+```
+
+Run django migrations to update the database
+```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
