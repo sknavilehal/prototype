@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.append('transcript/ghostvlad')
 import model as spkModel
-#import toolkits
+import toolkits
 import azure.cognitiveservices.speech as speechsdk
 from pydub import AudioSegment
 import numpy as np
@@ -213,7 +213,7 @@ def parse_arguments():
                         choices=['softmax', 'amsoftmax'], type=str)
     idk_parser.add_argument('--test_type', default='normal',
                         choices=['normal', 'hard', 'extend'], type=str)
-    
+
     model_args, _ = model_parser.parse_known_args()
     idk_args, _ = idk_parser.parse_known_args()
     inference_args, _ = inference_parser.parse_known_args()
@@ -327,7 +327,7 @@ def load_data(path, win_length=400, sr=16000, hop_length=160, n_fft=512, embeddi
     return utterances_spec, intervals
 
 
-def dia_audio(wav_path, embedding_per_second=0.3, overlap_rate=0.35):
+def dia_audio(wav_path, embedding_per_second=0.3, overlap_rate=0.33):
 
     # gpu configuration
     #toolkits.initialize_GPU(args)
@@ -438,6 +438,23 @@ def transcribe(audio):
                 cancellation_details.error_details))
 
 
+# def asr(audio, timestamps):
+#     d = dict()
+#     a = AudioSegment.from_wav(audio)
+#     for speaker in timestamps.keys():
+#         i = 1
+#         d[speaker] = []
+#         for timestamp in timestamps[speaker]:
+#             clip = a[timestamp['start']:timestamp['stop']]
+#             filename = str(speaker)+"_"+str(i)+".wav"
+#             clip.export(filename, format='wav')
+#             transcript = transcribe(filename)
+#             #print(transcript)
+#             t = str(timestamp['start']) + " to " + str(timestamp['stop'])
+#             #print(t)
+#             d[speaker].append((timestamp['start'], transcript))
+#             i += 1
+#     return d
 def asr(audio, timestamps):
     d = dict()
     a = AudioSegment.from_wav(audio)
@@ -445,17 +462,44 @@ def asr(audio, timestamps):
         i = 1
         d[speaker] = []
         for timestamp in timestamps[speaker]:
-            # get the first second of an mp3
-            clip = a[timestamp['start']:timestamp['stop']]
-            filename = str(speaker)+"_"+str(i)+".wav"
-            clip.export(filename, format='wav')
-            transcript = transcribe(filename)
-            #print(transcript)
-            t = str(timestamp['start']) + " to " + str(timestamp['stop'])
-            #print(t)
-            d[speaker].append((timestamp['start'], transcript))
+            duration = timestamp['stop'] - timestamp['start']
+#             print(duration)
+            if duration > 10000:
+                j = 0
+                transcript = ""
+                start = timestamp['start']
+                stop = timestamp['start'] + 10000
+                while True:
+                    clip = a[start:stop]
+                    filename = str(speaker)+"_"+str(i)+"_"+str(j)+".wav"
+                    clip.export(filename, format='wav')
+                    try:
+                        transcript += transcribe(filename)
+#                         print(transcript)
+#                         d[speaker][start] = transcript
+                    except Exception:
+#                         print("Nothing transcribed")
+                        if stop >= timestamp['stop']:break
+                    j += 1
+                    left = timestamp['stop'] - stop
+                    start += 10000
+                    if left > 10000:
+                        stop += 10000
+                    else:
+                        stop += left
+                if transcript != "":
+                    d[speaker].append((timestamp['start'],transcript))
+
+            else:
+                clip = a[timestamp['start']:timestamp['stop']] # get the first second of an mp3
+                filename = str(speaker)+"_"+str(i)+".wav"
+                clip.export(filename, format='wav')
+                transcript = transcribe(filename)
+                t = str(timestamp['start'])+" to "+str(timestamp['stop'])
+                d[speaker].append((timestamp['start'],transcript))
             i += 1
     return d
+
 
 result = pipeline(args.filename)
 print(result)
