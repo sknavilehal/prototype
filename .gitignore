@@ -8,3 +8,4 @@ migrations/
 __pycache__/
 nohup.out
 dump.rdb
+*.code-workspace

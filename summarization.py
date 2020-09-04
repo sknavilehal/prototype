@@ -3,6 +3,7 @@
 
 # In[1]:
 
+import sys
 import argparse
 import azure.cognitiveservices.speech as speechsdk
 from transformers import pipeline
@@ -95,20 +96,42 @@ def transcribe_each_chunk(folder=r'audio_chunks'):
             #print(result.text)
             final_text += result.text
         elif result.reason == speechsdk.ResultReason.NoMatch:
-            print("No speech could be recognized: {}".format(result.no_match_details))
+            print("No speech could be recognized: {}".format(result.no_match_details), file=sys.stderr)
         elif result.reason == speechsdk.ResultReason.Canceled:
             cancellation_details = result.cancellation_details
-            print("Speech Recognition canceled: {}".format(cancellation_details.reason))
+            print("Speech Recognition canceled: {}".format(cancellation_details.reason), file=sys.stderr)
             if cancellation_details.reason == speechsdk.CancellationReason.Error:
-                print("Error details: {}".format(cancellation_details.error_details))
+                print("Error details: {}".format(cancellation_details.error_details), file=sys.stderr)
     return final_text
 
 # In[9]:
 def summarize(text):
-    summary = summarizer(text, min_length=5, model = 'bart-large-cnn')
-    sum_text = summary[0]['summary_text']
-    #print(sum_text)
+    length = len(text.split())
+    all_tokens = text.split()
+    if length > 1000:
+        sum_text = ""
+        start = 0
+        end = 1000
+        whats_left = length - 1000
+
+        while end <= length:
+            summary = summarizer("".join(all_tokens[start:end+1]), min_length=5, model='google/pegasus-xsum')
+            sum_text += summary[0]['summary_text']
+            start += 1000
+
+            if whats_left > 1000:
+                end += 1000
+                whats_left -= 1000
+
+            else:
+                end += whats_left
+
+    else:
+        summary = summarizer(text, model='google/pegasus-xsum')
+        sum_text = summary[0]['summary_text']
+
     return sum_text
+
 
 # In[10]:
 summary = summarize_pipline(args.filename)

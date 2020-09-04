@@ -4,7 +4,6 @@ import sys
 import os
 sys.path.append('transcript/ghostvlad')
 import model as spkModel
-import toolkits
 import azure.cognitiveservices.speech as speechsdk
 from pydub import AudioSegment
 import numpy as np
