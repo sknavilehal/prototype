@@ -23,7 +23,7 @@ class Speaker(models.Model):
         return self.name
 
 class Transcript(models.Model):
-    text = models.CharField(max_length=100)
+    text = models.CharField(max_length=255)
     timestamp = models.IntegerField()
     sid = models.ForeignKey(Speaker, on_delete=models.CASCADE)
     mid = models.ForeignKey(Meeting, on_delete=models.CASCADE)

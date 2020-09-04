@@ -23,7 +23,7 @@ os.environ['PYTHONPATH'] = os.path.join(BASE_DIR, 'transcript', 'ghostvlad')
 SECRET_KEY = '1t4td4#)#+0*#%9yx+xxsz9hd6ejcvcvv3se806rbvh0bwae3+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 

@@ -15,10 +15,11 @@ def transcript_summary(mid):
     pipeline_path = os.path.join(settings.BASE_DIR, 'transcript','pipeline.py')
     process = Popen(['python', pipeline_path, '--filename', meeting.audio.path], stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
-    print(stderr.decode('utf-8'))
-    output = stdout.decode('utf-8').strip()
+    stdout, stderr = stdout.decode('utf-8').strip(), stderr.decode('utf-8').strip()
+    print(stdout)
+    print(stderr)
     try:
-        output = ast.literal_eval(output)
+        output = ast.literal_eval(stdout)
     except:
         traceback.print_exc()
         output = {0 : [(0,"There was an error while generating the transcript")]}
@@ -32,8 +33,10 @@ def transcript_summary(mid):
     summarizer_path = os.path.join(settings.BASE_DIR, 'summarization.py')
     process = Popen(['python', summarizer_path, '--filename', meeting.audio.path], stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
-    print(stderr.decode('utf-8'))
-    meeting.summary = stdout.decode('utf-8').strip()
+    stdout, stderr = stdout.decode('utf-8').strip(), stderr.decode('utf-8').strip()
+    print(stdout)
+    print(stderr)
+    meeting.summary = stdout
     meeting.save()
 
     wavs = [os.path.join(settings.BASE_DIR,w) for w in os.listdir() if w.endswith('.wav')]

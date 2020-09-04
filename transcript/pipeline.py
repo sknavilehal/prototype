@@ -327,7 +327,7 @@ def load_data(path, win_length=400, sr=16000, hop_length=160, n_fft=512, embeddi
     return utterances_spec, intervals
 
 
-def dia_audio(wav_path, embedding_per_second=0.3, overlap_rate=0.33):
+def dia_audio(wav_path, embedding_per_second=0.85, overlap_rate=0.6):
 
     # gpu configuration
     #toolkits.initialize_GPU(args)
@@ -485,7 +485,7 @@ def asr(audio, timestamps):
                         stop += 10000
                     else:
                         stop += left
-                if transcript != "":
+                if transcript and transcript != "":
                     d[speaker].append((timestamp['start'],transcript))
 
             else:
@@ -493,8 +493,8 @@ def asr(audio, timestamps):
                 filename = str(speaker)+"_"+str(i)+".wav"
                 clip.export(filename, format='wav')
                 transcript = transcribe(filename)
-                t = str(timestamp['start'])+" to "+str(timestamp['stop'])
-                d[speaker].append((timestamp['start'],transcript))
+                if transcript and transcript != "":
+                    d[speaker].append((timestamp['start'],transcript))
             i += 1
     return d
 
