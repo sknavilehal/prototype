@@ -51,7 +51,8 @@ def download_transcript(request, mid):
     meeting = Meeting.objects.get(pk=mid)
     transcripts = Transcript.objects.filter(mid=meeting)
     for transcript in transcripts:
-        f.write(str(transcript).encode('utf-8') + b'\n')
+        t = "%s %s: %s" % (transcript.timestamp_in_hms(),transcript.sid.name, transcript.text)
+        f.write(t.encode('utf-8') + b'\n')
     f.seek(0)
     return FileResponse(f, as_attachment=True, filename="%s_transcript.txt" % meeting.name)
 

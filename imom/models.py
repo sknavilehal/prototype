@@ -31,15 +31,20 @@ class Transcript(models.Model):
     class Meta:
         ordering = ['timestamp']
     
-    def __str__(self):
+    def timestamp_in_hms(self):
         millis = self.timestamp
         seconds=(millis/1000)%60
         seconds = int(seconds) 
         minutes=(millis/(1000*60))%60
         minutes = int(minutes)
         hours=(millis/(1000*60*60))%24
-      
-        return "[%d:%02d:%02d] %s: %s" % (hours,minutes,seconds, self.sid.name, self.text) 
+
+        return "[%d:%02d:%02d] " % (hours, minutes, seconds)
+
+    def __str__(self):
+        ts = self.timestamp_in_hms()
+
+        return "<strong>%s %s:</strong> %s" % (ts, self.sid.name, self.text) 
 
 class MeetingForm(forms.ModelForm):
     class Meta:
