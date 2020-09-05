@@ -2,11 +2,12 @@
 # coding: utf-8
 
 # In[1]:
-
 import sys
+import torch
 import argparse
 import azure.cognitiveservices.speech as speechsdk
 from transformers import pipeline
+from transformers import PegasusForConditionalGeneration, PegasusTokenizer
 summarizer = pipeline("summarization")
 
 # Creates an instance of a speech config with specified subscription key and service region.
@@ -24,8 +25,9 @@ args = parser.parse_args()
 def summarize_pipline(audio, chunks_output_folder='audio_chunks'):
     get_audio_chunks(audio)
     transcipt = transcribe_each_chunk(chunks_output_folder)
-    summary = summarize(transcipt)
-    return summary
+    #summary = summarize(transcipt)
+    abs_sumarry = abs_summarize(transcipt)
+    return abs_sumarry
 
 
 # In[4]:
@@ -108,29 +110,43 @@ def transcribe_each_chunk(folder=r'audio_chunks'):
 def summarize(text):
     length = len(text.split())
     all_tokens = text.split()
-    if length > 1000:
+    if length > 700:
         sum_text = ""
         start = 0
-        end = 1000
-        whats_left = length - 1000
+        end = 700
+        whats_left = length - 700
 
-        while end <= length:
-            summary = summarizer("".join(all_tokens[start:end+1]), min_length=5, model='google/pegasus-xsum')
+        while end < length:
+            new_text = " ".join(all_tokens[start:end])
+            # print(len(new_text.split()))
+            summary = summarizer(new_text, min_length=5, model='facebook/bart-large-cnn')
+            # print(summary)
             sum_text += summary[0]['summary_text']
-            start += 1000
+            start += 700
 
-            if whats_left > 1000:
-                end += 1000
-                whats_left -= 1000
+            if whats_left > 700:
+                end += 700
+                whats_left -= 700
 
             else:
                 end += whats_left
 
     else:
-        summary = summarizer(text, model='google/pegasus-xsum')
+        summary = summarizer(text, model='facebook/bart-large-cnn')
         sum_text = summary[0]['summary_text']
 
     return sum_text
+
+def abs_summarize(text):
+  src_text = [text]
+  model_name = 'google/pegasus-xsum'
+  torch_device = 'cuda' if torch.cuda.is_available() else 'cpu'
+  tokenizer = PegasusTokenizer.from_pretrained(model_name)
+  model = PegasusForConditionalGeneration.from_pretrained(model_name).to(torch_device)
+  batch = tokenizer.prepare_seq2seq_batch(src_text, truncation=True, padding='longest').to(torch_device)
+  translated = model.generate(**batch)
+  tgt_text = tokenizer.batch_decode(translated, skip_special_tokens=True)
+  return tgt_text[0]
 
 
 # In[10]:

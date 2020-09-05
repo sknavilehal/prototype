@@ -11,6 +11,17 @@
                 <button type="submit" class="custm-btn btn mb-2">.WAV Upload</button>
             </form>
         </div>
+        {% if form.errors %}
+        <div class="row justify-content-center">
+            {% for field in form %}
+                {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}    
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
 </section>
 
@@ -20,16 +31,23 @@
             {% for meeting in meetings %}
             <div class="col-md-4">
                 <div class="card mb-4 shadow-sm" style="background-color: #f0f8ff;">
-                    <!-- <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail" alt="Card image cap"> -->
+                    <div class="card-header container-fluid">
+                        <div class="row">
+                            <div class="col">
+                                <h5 class="text-center">{{meeting.name}}</h5>
+                            </div>
+                            <div class="col">
+                            <button type="button" onclick="window.location.href='{% url 'imom:delete' meeting.id %}';" class="close" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title text-center">{{meeting.name}}</h5>
-
-                        <!-- <div class="d-flex justify-content-between align-items-center"> -->
-
                         <audio controls style="width: 100%;">
                             <source src="{{meeting.audio.url}}" type="audio/mpeg">
                         </audio>
-                        {% if meeting.summary == "" %}
+                        <!-- {% if meeting.summary == "" %}
                             <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'imom:home' %}';">
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                 Refresh...
@@ -37,11 +55,58 @@
                         {% else %}
                             <a href="{% url 'imom:transcript' meeting.id %}" class="custm-btn btn stretched-link">Transcript</a>
                         {% endif %}
-                        <a href="{% url 'imom:delete' meeting.id %}" class="btn btn-danger float-right">Delete</a>
-                        <!-- </div> -->
+                        <a href="{% url 'imom:delete' meeting.id %}" class="btn btn-danger float-right">Delete</a> -->
+                        <button id="Transcript" class="btn custm-btn" type="button" onclick="window.location.href='{% url 'imom:transcript' meeting.id %}';" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Generating...
+                        </button>
+                        <button id="Summary" class="btn custm-btn float-right" type="button" onclick="window.location.href='{% url 'imom:summary' meeting.id %}';" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Generating...
+                        </button>
                     </div>
                 </div>
             </div>
+            <script>
+                var transcriptUrl = "/celery-progress/{{meeting.transcript_id}}/";
+                var summaryUrl = "/celery-progress/{{meeting.summary_id}}/";
+
+                function customProgress(progressBarElement, progressBarMessageElement, progress){
+
+                }
+
+                function customSuccess(progressBarElement, progressBarMessageElement){
+                    $(progressBarElement).prop('disabled', false);
+                    $(progressBarElement).text(progressBarElement.id)
+                    // $('button[id$=btn]>span').remove();
+                }
+
+                function customError(progressBarElement, progressBarMessageElement) {
+                    $(progressBarElement).text("Failed")
+                    $(progressBarElement).removeClass('btn-primary');
+                    $(progressBarElement).addClass('btn-danger');
+                }
+
+                var transcriptOptions = {
+                    progressBarId: "Transcript",
+                    onProgress: customProgress,
+                    onSuccess: customSuccess,
+                    onError: customError,
+                    pollInterval: 2000
+                }
+                var summaryOptions = {
+                    progressBarId: "Summary",
+                    onProgress: customProgress,
+                    onSuccess: customSuccess,
+                    onError: customError,
+                    pollInterval: 2000
+                }
+                $(function () {
+                    var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
+                    CeleryProgressBar.initProgressBar(transcriptUrl, transcriptOptions)
+                    CeleryProgressBar.initProgressBar(summaryUrl, summaryOptions)
+                });
+            </script>
             {% endfor %}
         </div>
     </div>

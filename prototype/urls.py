@@ -21,5 +21,6 @@ from imom import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('imom.urls'))
+    path('', include('imom.urls')),
+    path('celery-progress/', include('celery_progress.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

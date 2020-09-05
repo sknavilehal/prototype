@@ -7,28 +7,35 @@ from django.urls import reverse
 from django.views import View
 from django.http import FileResponse
 from django.shortcuts import render, redirect
-from .tasks import transcript_summary
+from .tasks import prepare_summary, prepare_transcript
+from django_celery_results.models import TaskResult
 from .models import Meeting, MeetingForm, SpeakerEditForm, Speaker, Transcript
 
 # Create your views here.
 class Home(View):
+    meetings = Meeting.objects.all()
     form_class = MeetingForm
     template_name = 'imom/home.html'
 
     def get(self, request):
-        meetings = Meeting.objects.all()
         form = self.form_class(auto_id=False)
-        return render(request, self.template_name, {"form":form, "meetings":meetings})
+        for m in self.meetings:
+            print(m.transcript_id, m.summary_id)
+        return render(request, self.template_name, {"form":form, "meetings":self.meetings, "task_id": "wtf"})
     
     def post(self, request):
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
             meeting = form.save(commit=False)
             meeting.save()
-            transcript_summary.delay(meeting.id)
+            transcript_id = prepare_transcript.delay(meeting.id).task_id
+            summary_id = prepare_summary.delay(meeting.id).task_id
+            meeting.transcript_id = transcript_id
+            meeting.summary_id = summary_id
+            meeting.save()
             return redirect(reverse('imom:home'))
         else:
-            return render(request, self.template_name, {"form": form})
+            return render(request, self.template_name, {"form": form, "meetings":self.meetings})
 
 def transcript(request,mid):
     form = SpeakerEditForm(mid=mid)
@@ -45,6 +52,11 @@ def transcript(request,mid):
             return redirect(reverse('imom:transcript', args=(mid,)))
         
     return render(request, 'imom/transcript.html', {"form":form, "transcripts":transcripts, "meeting":meeting})
+
+def summary(request,mid):
+    meeting = Meeting.objects.get(pk=mid)
+        
+    return render(request, 'imom/summary.html', {"meeting":meeting})
 
 def download_transcript(request, mid):
     f = io.BytesIO()

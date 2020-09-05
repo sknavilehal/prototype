@@ -16,11 +16,12 @@
 
     <!-- Custom styles for this template -->
     <link href="{% static 'imom/css/custom.css' %}" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 </head>
 
 <body>
     <header>
-        <div class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="navbar navbar-dark shadow-sm" style="background-color: #0C4B33;">
             <div class="container d-flex justify-content-between">
                 <a href="{% url 'imom:home' %}" class="navbar-brand d-flex align-items-center">
                     <strong>HOME</strong>
@@ -48,6 +49,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+    <script src="{% static 'celery_progress/celery_progress.js' %}"></script>
 </body>
 
 </html>

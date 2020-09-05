@@ -1,0 +1,16 @@
+{% extends 'base.html' %} {% block main %}
+<div class="py-5 bg-light" style="min-height: 500px;">
+    <div class="container">
+        <div class="row mt-4 p-4 row-bordered">
+            <div class="col-12">
+                <h5 class="display-5">Summary</h5>
+                <p><pre>{{meeting.summary}}</pre></p>
+            </div>
+            <div class="col-12">
+                <a href="{% url 'imom:dwnld_summary' meeting.id %}" class="btn suc-btn">Download Summary</a>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

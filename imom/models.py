@@ -1,12 +1,15 @@
 import os
 from django import forms
 from django.db import models
+from django_celery_results.models import TaskResult
 
 # Create your models here.
 class Meeting(models.Model):
     name = models.CharField(max_length=50)
     audio = models.FileField(upload_to='audio')
     summary = models.TextField(blank=True, default='')
+    transcript_id = models.CharField(null=True, max_length=100)
+    summary_id = models.CharField(null=True, max_length=100)
 
     def __str__(self):
         return self.name
@@ -49,7 +52,7 @@ class Transcript(models.Model):
 class MeetingForm(forms.ModelForm):
     class Meta:
         model = Meeting
-        fields = '__all__'
+        fields = {'name', 'audio'}
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
