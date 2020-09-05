@@ -7,7 +7,7 @@ from django_celery_results.models import TaskResult
 class Meeting(models.Model):
     name = models.CharField(max_length=50)
     audio = models.FileField(upload_to='audio')
-    summary = models.TextField(blank=True, default='')
+    date = models.DateField()
     transcript_id = models.CharField(null=True, max_length=100)
     summary_id = models.CharField(null=True, max_length=100)
 
@@ -24,6 +24,11 @@ class Speaker(models.Model):
 
     def __str__(self):
         return self.name
+
+class Summary(models.Model):
+    abs_summary = models.TextField(blank=True, default='')
+    ext_summary = models.TextField(blank=True, default='')
+    mid = models.ForeignKey(Meeting, on_delete=models.CASCADE)
 
 class Transcript(models.Model):
     text = models.CharField(max_length=255)
@@ -52,7 +57,9 @@ class Transcript(models.Model):
 class MeetingForm(forms.ModelForm):
     class Meta:
         model = Meeting
-        fields = {'name', 'audio'}
+        fields = {'name', 'audio', 'date'}
+        widgets = {'date': forms.DateInput(attrs={'class': 'form-control mb-2 mr-sm-2 datepicker'})}
+
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

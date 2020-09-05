@@ -6,7 +6,9 @@
         <div class="row justify-content-center">
             <form class="form-inline" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <label class="mb-2 mr-sm-2" for="name">Meeting Name</label> {{form.name}} {{form.audio}}
+                <label class="mb-2 mr-sm-2" for="name">Meeting Name</label> {{form.name}} 
+                <label class="mb-2 mr-sm-2" for="date">Date</label>{{form.date}}
+                {{form.audio}}
 
                 <button type="submit" class="custm-btn btn mb-2">.WAV Upload</button>
             </form>

@@ -9,7 +9,7 @@ from django.http import FileResponse
 from django.shortcuts import render, redirect
 from .tasks import prepare_summary, prepare_transcript
 from django_celery_results.models import TaskResult
-from .models import Meeting, MeetingForm, SpeakerEditForm, Speaker, Transcript
+from .models import Meeting, MeetingForm, SpeakerEditForm, Speaker, Transcript, Summary
 
 # Create your views here.
 class Home(View):
@@ -55,8 +55,9 @@ def transcript(request,mid):
 
 def summary(request,mid):
     meeting = Meeting.objects.get(pk=mid)
+    summary = Summary.objects.get(mid=meeting)
         
-    return render(request, 'imom/summary.html', {"meeting":meeting})
+    return render(request, 'imom/summary.html', {"summary":summary})
 
 def download_transcript(request, mid):
     f = io.BytesIO()
@@ -68,11 +69,15 @@ def download_transcript(request, mid):
     f.seek(0)
     return FileResponse(f, as_attachment=True, filename="%s_transcript.txt" % meeting.name)
 
-def download_summary(request, mid):
+def download_summary(request, id):
     f = io.BytesIO()
-    meeting = Meeting.objects.get(pk=mid)
-    f.write(meeting.summary.encode('utf-8')); f.seek(0)
-    return FileResponse(f, as_attachment=True, filename="%s_summary.txt" % meeting.name)
+    summary = Summary.objects.get(pk=id)
+    if request.GET['type'] == 'abs':
+        f.write(summary.abs_summary.encode('utf-8'))
+    else:
+        f.write(summary.ext_summary.encode('utf-8'))
+    f.seek(0)
+    return FileResponse(f, as_attachment=True, filename="%s_summary.txt" % summary.mid.name)
 
 def delete(request,mid):
     meeting = Meeting.objects.get(pk=mid)

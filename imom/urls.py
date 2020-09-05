@@ -7,6 +7,6 @@ urlpatterns = [
     path('transcript/<int:mid>', views.transcript, name='transcript'),
     path('summary/<int:mid>', views.summary, name='summary'),
     path('delete/<int:mid>', views.delete, name='delete'),
-    path('dwnld_summary/<int:mid>', views.download_summary, name='dwnld_summary'),
+    path('dwnld_summary/<int:id>', views.download_summary, name='dwnld_summary'),
     path('dwnld_transcript/<int:mid>', views.download_transcript, name='dwnld_transcript'),
 ]

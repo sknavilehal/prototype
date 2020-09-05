@@ -25,9 +25,9 @@ args = parser.parse_args()
 def summarize_pipline(audio, chunks_output_folder='audio_chunks'):
     get_audio_chunks(audio)
     transcipt = transcribe_each_chunk(chunks_output_folder)
-    #summary = summarize(transcipt)
+    ext_summary = summarize(transcipt)
     abs_sumarry = abs_summarize(transcipt)
-    return abs_sumarry
+    return {"abs_summary": abs_sumarry, "ext_summary": ext_summary}
 
 
 # In[4]:
