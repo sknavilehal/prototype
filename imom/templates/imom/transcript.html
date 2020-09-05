@@ -1,13 +1,13 @@
 {% extends 'base.html' %} {% block main %}
 <div class="jumbotron jumbotron-fluid mb-0">
     <div class="container">
-      <h1 class="display-5">Meeting name: {{summary.mid.name}}</h1>
-      <p class="lead">Meeting date: {{summary.mid.date}}</p>
+      <h1 class="display-5">Meeting name: {{meeting.name}}</h1>
+      <p class="lead">Date: {{meeting.date}}</p>
     </div>
 </div>
 <div class="py-5 bg-light" style="min-height: 500px;">
     <div class="container">
-        <div class="row mt-4 p-4 row-bordered">
+        <div class="row p-4 row-bordered">
             <div class="col">
                 <h5 class="display-5">Rename Speakers</h5>
                 <form class="form-inline" method="post">
