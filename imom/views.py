@@ -13,17 +13,16 @@ from .models import Meeting, MeetingForm, SpeakerEditForm, Speaker, Transcript, 
 
 # Create your views here.
 class Home(View):
-    meetings = Meeting.objects.all()
     form_class = MeetingForm
     template_name = 'imom/home.html'
 
     def get(self, request):
+        meetings = Meeting.objects.all()
         form = self.form_class(auto_id=False)
-        for m in self.meetings:
-            print(m.transcript_id, m.summary_id)
-        return render(request, self.template_name, {"form":form, "meetings":self.meetings, "task_id": "wtf"})
+        return render(request, self.template_name, {"form":form, "meetings":meetings, "task_id": "wtf"})
     
     def post(self, request):
+        meetings = Meeting.objects.all()
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
             meeting = form.save(commit=False)
@@ -35,7 +34,7 @@ class Home(View):
             meeting.save()
             return redirect(reverse('imom:home'))
         else:
-            return render(request, self.template_name, {"form": form, "meetings":self.meetings})
+            return render(request, self.template_name, {"form": form, "meetings":meetings})
 
 def transcript(request,mid):
     form = SpeakerEditForm(mid=mid)
@@ -67,7 +66,7 @@ def download_transcript(request, mid):
         t = "%s %s: %s" % (transcript.timestamp_in_hms(),transcript.sid.name, transcript.text)
         f.write(t.encode('utf-8') + b'\n')
     f.seek(0)
-    return FileResponse(f, as_attachment=True, filename="%s_transcript.txt" % meeting.name)
+    return FileResponse(f, as_attachment=True, filename="%s_%s.txt" % (meeting.date, meeting.name))
 
 def download_summary(request, id):
     f = io.BytesIO()
@@ -77,7 +76,7 @@ def download_summary(request, id):
     else:
         f.write(summary.ext_summary.encode('utf-8'))
     f.seek(0)
-    return FileResponse(f, as_attachment=True, filename="%s_summary.txt" % summary.mid.name)
+    return FileResponse(f, as_attachment=True, filename="%s_%s.txt" % (summary.mid.date, summary.mid.name))
 
 def delete(request,mid):
     meeting = Meeting.objects.get(pk=mid)

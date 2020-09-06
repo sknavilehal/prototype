@@ -58,7 +58,7 @@ def prepare_summary(self, mid, task_id=None):
         output["mid"] = meeting
     except:
         traceback.print_exc()
-        output = {"abs_summary": "ERROR" ,"ext_summary": "ERROR", "mid": meeting}
+        output = {"abs_summary": stderr ,"ext_summary": stderr, "mid": meeting}
 
     summary = Summary(**output)
     summary.save()

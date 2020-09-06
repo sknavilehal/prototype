@@ -58,11 +58,11 @@
                             <a href="{% url 'imom:transcript' meeting.id %}" class="custm-btn btn stretched-link">Transcript</a>
                         {% endif %}
                         <a href="{% url 'imom:delete' meeting.id %}" class="btn btn-danger float-right">Delete</a> -->
-                        <button id="Transcript" class="btn custm-btn" type="button" onclick="window.location.href='{% url 'imom:transcript' meeting.id %}';" disabled>
+                        <button id="{{meeting.transcript_id}}" class="btn custm-btn" data-type="Transcript" type="button" onclick="window.location.href='{% url 'imom:transcript' meeting.id %}';" disabled>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Generating...
                         </button>
-                        <button id="Summary" class="btn custm-btn float-right" type="button" onclick="window.location.href='{% url 'imom:summary' meeting.id %}';" disabled>
+                        <button id="{{meeting.summary_id}}" class="btn custm-btn float-right" data-type="Summary" type="button" onclick="window.location.href='{% url 'imom:summary' meeting.id %}';" disabled>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Generating...
                         </button>
@@ -70,16 +70,16 @@
                 </div>
             </div>
             <script>
-                var transcriptUrl = "/celery-progress/{{meeting.transcript_id}}/";
-                var summaryUrl = "/celery-progress/{{meeting.summary_id}}/";
 
                 function customProgress(progressBarElement, progressBarMessageElement, progress){
-
+                    // $(progressBarElement).children("span").text("Generating...")
+                    // $('button[id$=btn]>span').text('Generating...');
                 }
 
                 function customSuccess(progressBarElement, progressBarMessageElement){
                     $(progressBarElement).prop('disabled', false);
-                    $(progressBarElement).text(progressBarElement.id)
+                    console.log($(progressBarElement).data('type'))
+                    $(progressBarElement).text($(progressBarElement).data('type'))
                     // $('button[id$=btn]>span').remove();
                 }
 
@@ -89,22 +89,23 @@
                     $(progressBarElement).addClass('btn-danger');
                 }
 
-                var transcriptOptions = {
-                    progressBarId: "Transcript",
-                    onProgress: customProgress,
-                    onSuccess: customSuccess,
-                    onError: customError,
-                    pollInterval: 2000
-                }
-                var summaryOptions = {
-                    progressBarId: "Summary",
-                    onProgress: customProgress,
-                    onSuccess: customSuccess,
-                    onError: customError,
-                    pollInterval: 2000
-                }
                 $(function () {
-                    var progressUrl = "{% url 'celery_progress:task_status' task_id %}";
+                    const transcriptOptions = {
+                        progressBarId: "{{meeting.transcript_id}}",
+                        onProgress: customProgress,
+                        onSuccess: customSuccess,
+                        onError: customError,
+                        pollInterval: 2000
+                    }
+                    const summaryOptions = {
+                        progressBarId: "{{meeting.summary_id}}",
+                        onProgress: customProgress,
+                        onSuccess: customSuccess,
+                        onError: customError,
+                        pollInterval: 2000
+                    }
+                    var transcriptUrl = "/celery-progress/{{meeting.transcript_id}}/";
+                    var summaryUrl = "/celery-progress/{{meeting.summary_id}}/";
                     CeleryProgressBar.initProgressBar(transcriptUrl, transcriptOptions)
                     CeleryProgressBar.initProgressBar(summaryUrl, summaryOptions)
                 });

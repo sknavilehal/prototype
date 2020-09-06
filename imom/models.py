@@ -1,8 +1,10 @@
 import os
+import io
 from django import forms
 from django.db import models
+from django.core import files
 from django_celery_results.models import TaskResult
-
+from pydub import AudioSegment
 # Create your models here.
 class Meeting(models.Model):
     name = models.CharField(max_length=50)
@@ -17,6 +19,17 @@ class Meeting(models.Model):
     def delete(self, *args, **kwargs):
         os.remove(self.audio.path)
         super(Meeting,self).delete(*args,**kwargs)
+    
+    def save(self, *args, **kwargs):
+        filename = self.audio.name
+        if filename.endswith('.mp3'):
+            src = files.File(self.audio.open())
+            dst = io.BytesIO()
+            sound = AudioSegment.from_mp3(src); src.close()
+            sound.export(dst, format="wav")
+            #meeting.audio.save(filename[:-4]+'.wav', dst, save=False)
+            self.audio = files.File(dst, name=filename[:-4]+'.wav')
+        super().save(*args, **kwargs)
 
 class Speaker(models.Model):
     name = models.CharField(max_length=20)
@@ -31,7 +44,7 @@ class Summary(models.Model):
     mid = models.ForeignKey(Meeting, on_delete=models.CASCADE)
 
 class Transcript(models.Model):
-    text = models.CharField(max_length=255)
+    text = models.TextField(blank=True, default='')
     timestamp = models.IntegerField()
     sid = models.ForeignKey(Speaker, on_delete=models.CASCADE)
     mid = models.ForeignKey(Meeting, on_delete=models.CASCADE)
