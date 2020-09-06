@@ -1,4 +1,5 @@
 {% extends 'base.html' %} {% block main %}
+{{form.media}}
 <section class="jumbotron text-center mb-0">
     <div class="container">
         <h1 class="jumbotron-heading">MOM.ai</h1>
@@ -6,10 +7,10 @@
         <div class="row justify-content-center">
             <form class="form-inline" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <label class="mb-2 mr-sm-2" for="name">Meeting Name</label> {{form.name}} 
-                <label class="mb-2 mr-sm-2" for="date">Date</label>{{form.date}}
+                <label class="mb-2 mr-sm-2" for="name">Name</label> {{form.name}} 
+                <label class="mb-2 mr-2" for="date">Date</label>{{form.date}}
                 {{form.audio}}
-
+                
                 <button type="submit" class="custm-btn btn mb-2">.WAV Upload</button>
             </form>
         </div>
@@ -78,7 +79,6 @@
 
                 function customSuccess(progressBarElement, progressBarMessageElement){
                     $(progressBarElement).prop('disabled', false);
-                    console.log($(progressBarElement).data('type'))
                     $(progressBarElement).text($(progressBarElement).data('type'))
                     // $('button[id$=btn]>span').remove();
                 }
@@ -114,4 +114,6 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block script %}
 {% endblock %}

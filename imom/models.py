@@ -3,8 +3,10 @@ import io
 from django import forms
 from django.db import models
 from django.core import files
-from django_celery_results.models import TaskResult
 from pydub import AudioSegment
+from django_celery_results.models import TaskResult
+from bootstrap_datepicker_plus import DatePickerInput
+
 # Create your models here.
 class Meeting(models.Model):
     name = models.CharField(max_length=50)
@@ -71,7 +73,7 @@ class MeetingForm(forms.ModelForm):
     class Meta:
         model = Meeting
         fields = {'name', 'audio', 'date'}
-        widgets = {'date': forms.DateInput(attrs={'class': 'form-control mb-2 mr-sm-2 datepicker'})}
+        widgets = {'date': DatePickerInput()}
 
     
     def __init__(self, *args, **kwargs):
