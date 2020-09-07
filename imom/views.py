@@ -71,6 +71,8 @@ def download_transcript(request, mid):
 def download_summary(request, id):
     f = io.BytesIO()
     summary = Summary.objects.get(pk=id)
+    line = "Meeting name: %s    Date: %s\n" % (summary.mid.name, summary.mid.date)
+    f.write(line.encode('utf-8'))
     if request.GET['type'] == 'abs':
         f.write(summary.abs_summary.encode('utf-8'))
     else:
