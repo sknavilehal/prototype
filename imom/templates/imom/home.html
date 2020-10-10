@@ -1,0 +1,119 @@
+{% extends 'base.html' %} {% block main %}
+{{form.media}}
+<section class="jumbotron text-center mb-0">
+    <div class="container">
+        <h1 class="jumbotron-heading">MOM.ai</h1>
+        <p class="lead text-muted">An AI-enabled tool to tag multiple speakers from a pre-recorded meeting audio and generate the transcript along with the MoM summary</p>
+        <div class="row justify-content-center">
+            <form class="form-inline" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label class="mb-2 mr-sm-2" for="name">Name</label> {{form.name}} 
+                <label class="mb-2 mr-2" for="date">Date</label>{{form.date}}
+                {{form.audio}}
+                
+                <button type="submit" class="custm-btn btn mb-2">.WAV Upload</button>
+            </form>
+        </div>
+        {% if form.errors %}
+        <div class="row justify-content-center">
+            {% for field in form %}
+                {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+                {% endfor %}    
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<div class="py-5 bg-light" style="min-height: 400px;">
+    <div class="container">
+        <div class="row">
+            {% for meeting in meetings %}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm" style="background-color: #f0f8ff;">
+                    <div class="card-header container-fluid">
+                        <div class="row">
+                            <div class="col">
+                                <h5 class="text-center">{{meeting.name}}</h5>
+                            </div>
+                            <div class="col">
+                            <button type="button" onclick="window.location.href='{% url 'imom:delete' meeting.id %}';" class="close" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <audio controls style="width: 100%;">
+                            <source src="{{meeting.audio.url}}" type="audio/mpeg">
+                        </audio>
+                        <!-- {% if meeting.summary == "" %}
+                            <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'imom:home' %}';">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Refresh...
+                            </button>
+                        {% else %}
+                            <a href="{% url 'imom:transcript' meeting.id %}" class="custm-btn btn stretched-link">Transcript</a>
+                        {% endif %}
+                        <a href="{% url 'imom:delete' meeting.id %}" class="btn btn-danger float-right">Delete</a> -->
+                        <button id="{{meeting.transcript_id}}" class="btn custm-btn" data-type="Transcript" type="button" onclick="window.location.href='{% url 'imom:transcript' meeting.id %}';" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Generating...
+                        </button>
+                        <button id="{{meeting.summary_id}}" class="btn custm-btn float-right" data-type="Summary" type="button" onclick="window.location.href='{% url 'imom:summary' meeting.id %}';" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Generating...
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <script>
+
+                function customProgress(progressBarElement, progressBarMessageElement, progress){
+                    // $(progressBarElement).children("span").text("Generating...")
+                    // $('button[id$=btn]>span').text('Generating...');
+                }
+
+                function customSuccess(progressBarElement, progressBarMessageElement){
+                    $(progressBarElement).prop('disabled', false);
+                    $(progressBarElement).text($(progressBarElement).data('type'))
+                    // $('button[id$=btn]>span').remove();
+                }
+
+                function customError(progressBarElement, progressBarMessageElement) {
+                    $(progressBarElement).text("Failed")
+                    $(progressBarElement).removeClass('btn-primary');
+                    $(progressBarElement).addClass('btn-danger');
+                }
+
+                $(function () {
+                    const transcriptOptions = {
+                        progressBarId: "{{meeting.transcript_id}}",
+                        onProgress: customProgress,
+                        onSuccess: customSuccess,
+                        onError: customError,
+                        pollInterval: 2000
+                    }
+                    const summaryOptions = {
+                        progressBarId: "{{meeting.summary_id}}",
+                        onProgress: customProgress,
+                        onSuccess: customSuccess,
+                        onError: customError,
+                        pollInterval: 2000
+                    }
+                    var transcriptUrl = "/celery-progress/{{meeting.transcript_id}}/";
+                    var summaryUrl = "/celery-progress/{{meeting.summary_id}}/";
+                    CeleryProgressBar.initProgressBar(transcriptUrl, transcriptOptions)
+                    CeleryProgressBar.initProgressBar(summaryUrl, summaryOptions)
+                });
+            </script>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+{% endblock %}

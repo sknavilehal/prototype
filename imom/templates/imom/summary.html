@@ -1,0 +1,30 @@
+{% extends 'base.html' %} {% block main %}
+<div class="jumbotron jumbotron-fluid mb-0">
+    <div class="container">
+      <h1 class="display-5">Meeting name: {{summary.mid.name}}</h1>
+      <p class="lead">Date: {{summary.mid.date}}</p>
+    </div>
+</div>
+<div class="py-5 bg-light" style="min-height: 500px;">
+    <div class="container">
+        <div class="row p-4 row-bordered">
+            <div class="col-12">
+                <h5 class="display-5">Abstractive Summary</h5>
+                <p>{{summary.abs_summary}}</p>
+            </div>
+            <div class="col-12">
+                <a href="{% url 'imom:dwnld_summary' summary.id %}?type=abs" class="btn suc-btn">Download Summary</a>
+            </div>
+        </div>
+        <div class="row mt-4 p-4 row-bordered">
+            <div class="col-12">
+                <h5 class="display-5">Extractive Summary</h5>
+                <p>{{summary.ext_summary}}</p>
+            </div>
+            <div class="col-12">
+                <a href="{% url 'imom:dwnld_summary' summary.id %}?type=ext" class="btn suc-btn">Download Summary</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
